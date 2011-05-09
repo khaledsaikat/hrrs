@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 3.3.3
+-- version 3.3.9
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Sep 20, 2010 at 08:39 AM
--- Server version: 5.0.51
--- PHP Version: 5.2.5
+-- Generation Time: May 10, 2011 at 12:47 AM
+-- Server version: 5.5.8
+-- PHP Version: 5.3.5
 
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 
@@ -22,13 +22,81 @@ SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `authassignment`
+--
+
+CREATE TABLE IF NOT EXISTS `authassignment` (
+  `itemname` varchar(64) NOT NULL,
+  `userid` varchar(64) NOT NULL,
+  `bizrule` text,
+  `data` text,
+  PRIMARY KEY (`itemname`,`userid`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `authassignment`
+--
+
+INSERT INTO `authassignment` (`itemname`, `userid`, `bizrule`, `data`) VALUES
+('RBAC Manager', '1', NULL, 'N;');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `authitem`
+--
+
+CREATE TABLE IF NOT EXISTS `authitem` (
+  `name` varchar(64) NOT NULL,
+  `type` int(11) NOT NULL,
+  `description` text,
+  `bizrule` text,
+  `data` text,
+  PRIMARY KEY (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `authitem`
+--
+
+INSERT INTO `authitem` (`name`, `type`, `description`, `bizrule`, `data`) VALUES
+('Auth Assignments Manager', 2, 'Manages Role Assignments. RBAM required role.', NULL, 'N;'),
+('Auth Items Manager', 2, 'Manages Auth Items. RBAM required role.', NULL, 'N;'),
+('Authenticated', 2, 'Default role for users that are logged in. RBAC default role.', 'return !Yii::app()->getUser()->getIsGuest();', 'N;'),
+('Guest', 2, 'Default role for users that are not logged in. RBAC default role.', 'return Yii::app()->getUser()->getIsGuest();', 'N;'),
+('RBAC Manager', 2, 'Manages Auth Items and Role Assignments. RBAM required role.', NULL, 'N;');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `authitemchild`
+--
+
+CREATE TABLE IF NOT EXISTS `authitemchild` (
+  `parent` varchar(64) NOT NULL,
+  `child` varchar(64) NOT NULL,
+  PRIMARY KEY (`parent`,`child`),
+  KEY `child` (`child`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `authitemchild`
+--
+
+INSERT INTO `authitemchild` (`parent`, `child`) VALUES
+('RBAC Manager', 'Auth Assignments Manager'),
+('RBAC Manager', 'Auth Items Manager');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `hr_category`
 --
 
 CREATE TABLE IF NOT EXISTS `hr_category` (
-  `id` int(11) NOT NULL auto_increment,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL,
-  PRIMARY KEY  (`id`),
+  PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=3 ;
 
@@ -47,16 +115,16 @@ INSERT INTO `hr_category` (`id`, `name`) VALUES
 --
 
 CREATE TABLE IF NOT EXISTS `hr_company` (
-  `com_id` int(11) NOT NULL auto_increment,
-  `com_type` varchar(50) character set utf8 default NULL,
-  `com_info` text collate utf8_unicode_ci,
-  `com_address` text character set utf8,
-  `com_contact_no` varchar(30) character set utf8 default NULL,
-  `com_web` varchar(50) collate utf8_unicode_ci default NULL,
+  `com_id` int(11) NOT NULL AUTO_INCREMENT,
+  `com_type` varchar(50) CHARACTER SET utf8 DEFAULT NULL,
+  `com_info` text COLLATE utf8_unicode_ci,
+  `com_address` text CHARACTER SET utf8,
+  `com_contact_no` varchar(30) CHARACTER SET utf8 DEFAULT NULL,
+  `com_web` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
   `com_logo` blob,
-  `create_time` int(11) default NULL,
-  `com_user_id` int(11) default NULL,
-  PRIMARY KEY  (`com_id`)
+  `create_time` int(11) DEFAULT NULL,
+  `com_user_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`com_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=40 ;
 
 --
@@ -111,11 +179,11 @@ INSERT INTO `hr_company` (`com_id`, `com_type`, `com_info`, `com_address`, `com_
 --
 
 CREATE TABLE IF NOT EXISTS `hr_com_js` (
-  `Id` int(11) NOT NULL auto_increment,
-  `js_id` int(11) NOT NULL default '0',
-  `job_id` int(11) NOT NULL default '0',
-  `apply_time` int(11) default NULL,
-  PRIMARY KEY  (`Id`)
+  `Id` int(11) NOT NULL AUTO_INCREMENT,
+  `js_id` int(11) NOT NULL DEFAULT '0',
+  `job_id` int(11) NOT NULL DEFAULT '0',
+  `apply_time` int(11) DEFAULT NULL,
+  PRIMARY KEY (`Id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 --
@@ -130,8 +198,8 @@ CREATE TABLE IF NOT EXISTS `hr_com_js` (
 --
 
 CREATE TABLE IF NOT EXISTS `hr_country` (
-  `id` int(11) NOT NULL auto_increment,
-  `code` int(11) default NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `code` int(11) DEFAULT NULL,
   `name` varchar(50) NOT NULL,
   KEY `id` (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=4 ;
@@ -152,22 +220,22 @@ INSERT INTO `hr_country` (`id`, `code`, `name`) VALUES
 --
 
 CREATE TABLE IF NOT EXISTS `hr_job_posting1` (
-  `id` int(11) NOT NULL auto_increment,
-  `title` varchar(100) collate utf8_unicode_ci default NULL,
-  `category` int(11) default NULL,
-  `responsibility` text collate utf8_unicode_ci,
-  `description` text collate utf8_unicode_ci,
-  `experience` int(11) default NULL,
-  `recruit_number` int(11) default NULL,
-  `deadline` date default NULL,
-  `skills_req` text collate utf8_unicode_ci,
-  `salary_min` int(11) default NULL,
-  `salary_max` int(11) default NULL,
-  `com_user_id` int(11) default NULL,
-  `status` int(11) default NULL,
-  `published` int(11) default NULL,
-  `create_time` int(11) default NULL,
-  PRIMARY KEY  (`id`)
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `title` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `category` int(11) DEFAULT NULL,
+  `responsibility` text COLLATE utf8_unicode_ci,
+  `description` text COLLATE utf8_unicode_ci,
+  `experience` int(11) DEFAULT NULL,
+  `recruit_number` int(11) DEFAULT NULL,
+  `deadline` date DEFAULT NULL,
+  `skills_req` text COLLATE utf8_unicode_ci,
+  `salary_min` int(11) DEFAULT NULL,
+  `salary_max` int(11) DEFAULT NULL,
+  `com_user_id` int(11) DEFAULT NULL,
+  `status` int(11) DEFAULT NULL,
+  `published` int(11) DEFAULT NULL,
+  `create_time` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=13 ;
 
 --
@@ -196,18 +264,18 @@ INSERT INTO `hr_job_posting1` (`id`, `title`, `category`, `responsibility`, `des
 
 CREATE TABLE IF NOT EXISTS `hr_job_posting2` (
   `id` int(11) NOT NULL,
-  `gender` int(11) default NULL,
-  `accademic_req` text character set utf8 collate utf8_unicode_ci,
-  `age_from` int(11) default NULL,
-  `age_to` int(11) default NULL,
-  `additional_req` text character set utf8 collate utf8_unicode_ci,
-  `job_type` int(11) default NULL,
-  `job_level` int(11) default NULL,
-  `interview_location` varchar(255) character set utf8 collate utf8_unicode_ci default NULL,
-  `job_location` varchar(255) character set utf8 collate utf8_unicode_ci default NULL,
-  PRIMARY KEY  (`id`),
+  `gender` int(11) DEFAULT NULL,
+  `accademic_req` text CHARACTER SET utf8 COLLATE utf8_unicode_ci,
+  `age_from` int(11) DEFAULT NULL,
+  `age_to` int(11) DEFAULT NULL,
+  `additional_req` text CHARACTER SET utf8 COLLATE utf8_unicode_ci,
+  `job_type` int(11) DEFAULT NULL,
+  `job_level` int(11) DEFAULT NULL,
+  `interview_location` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
+  `job_location` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`id`),
   KEY `id` (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `hr_job_posting2`
@@ -229,11 +297,11 @@ INSERT INTO `hr_job_posting2` (`id`, `gender`, `accademic_req`, `age_from`, `age
 --
 
 CREATE TABLE IF NOT EXISTS `hr_js_additional` (
-  `id` int(11) NOT NULL auto_increment,
-  `js_id` int(11) default NULL,
-  `name` varchar(100) default NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `js_id` int(11) DEFAULT NULL,
+  `name` varchar(100) DEFAULT NULL,
   `description` text,
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=5 ;
 
 --
@@ -253,13 +321,13 @@ INSERT INTO `hr_js_additional` (`id`, `js_id`, `name`, `description`) VALUES
 --
 
 CREATE TABLE IF NOT EXISTS `hr_js_degree` (
-  `id` int(11) NOT NULL auto_increment,
-  `degree_name` varchar(100) default NULL,
-  `user_id` int(11) default '0',
-  `institute` varchar(100) default NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `degree_name` varchar(100) DEFAULT NULL,
+  `user_id` int(11) DEFAULT '0',
+  `institute` varchar(100) DEFAULT NULL,
   `year` int(11) NOT NULL,
   `result` varchar(30) NOT NULL,
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=7 ;
 
 --
@@ -280,18 +348,18 @@ INSERT INTO `hr_js_degree` (`id`, `degree_name`, `user_id`, `institute`, `year`,
 --
 
 CREATE TABLE IF NOT EXISTS `hr_js_education` (
-  `id` int(11) NOT NULL auto_increment,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `js_id` int(11) NOT NULL,
-  `degree` varchar(100) default NULL,
-  `institute` varchar(100) default NULL,
-  `start_date` date default NULL,
-  `end_date` date default NULL,
-  `subject` varchar(100) default NULL,
-  `duration` varchar(50) default NULL,
-  `result` varchar(30) default NULL,
-  `outof` varchar(30) default NULL,
-  `degree_type` varchar(30) default NULL,
-  PRIMARY KEY  (`id`)
+  `degree` varchar(100) DEFAULT NULL,
+  `institute` varchar(100) DEFAULT NULL,
+  `start_date` date DEFAULT NULL,
+  `end_date` date DEFAULT NULL,
+  `subject` varchar(100) DEFAULT NULL,
+  `duration` varchar(50) DEFAULT NULL,
+  `result` varchar(30) DEFAULT NULL,
+  `outof` varchar(30) DEFAULT NULL,
+  `degree_type` varchar(30) DEFAULT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 --
@@ -306,14 +374,14 @@ CREATE TABLE IF NOT EXISTS `hr_js_education` (
 --
 
 CREATE TABLE IF NOT EXISTS `hr_js_experience` (
-  `id` int(11) NOT NULL auto_increment,
-  `js_id` int(11) NOT NULL default '0',
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `js_id` int(11) NOT NULL DEFAULT '0',
   `position` varchar(100) NOT NULL,
   `organization` varchar(100) NOT NULL,
-  `start_date` date default NULL,
-  `end_date` date default NULL,
+  `start_date` date DEFAULT NULL,
+  `end_date` date DEFAULT NULL,
   `responsibility` text,
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=5 ;
 
 --
@@ -334,22 +402,22 @@ INSERT INTO `hr_js_experience` (`id`, `js_id`, `position`, `organization`, `star
 
 CREATE TABLE IF NOT EXISTS `hr_js_info` (
   `id` int(11) NOT NULL,
-  `first_name` varchar(50) collate utf8_unicode_ci NOT NULL,
-  `last_name` varchar(50) collate utf8_unicode_ci default NULL,
-  `middle_name` varchar(50) collate utf8_unicode_ci default NULL,
-  `objectives` text collate utf8_unicode_ci NOT NULL,
-  `contact_no` varchar(30) collate utf8_unicode_ci default NULL,
-  `website` varchar(50) collate utf8_unicode_ci default NULL,
-  `gender` varchar(30) collate utf8_unicode_ci default NULL,
-  `salary` varchar(30) collate utf8_unicode_ci default NULL,
+  `first_name` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `last_name` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `middle_name` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `objectives` text COLLATE utf8_unicode_ci NOT NULL,
+  `contact_no` varchar(30) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `website` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `gender` varchar(30) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `salary` varchar(30) COLLATE utf8_unicode_ci DEFAULT NULL,
   `photo` blob,
-  `address` text collate utf8_unicode_ci,
-  `city` varchar(50) collate utf8_unicode_ci default NULL,
-  `country` int(11) default NULL,
-  `postal_code` varchar(30) collate utf8_unicode_ci default NULL,
-  `state` varchar(30) collate utf8_unicode_ci default NULL,
-  `experince_year` varchar(50) collate utf8_unicode_ci default NULL,
-  PRIMARY KEY  (`id`)
+  `address` text COLLATE utf8_unicode_ci,
+  `city` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `country` int(11) DEFAULT NULL,
+  `postal_code` varchar(30) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `state` varchar(30) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `experince_year` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
@@ -370,16 +438,16 @@ INSERT INTO `hr_js_info` (`id`, `first_name`, `last_name`, `middle_name`, `objec
 --
 
 CREATE TABLE IF NOT EXISTS `hr_js_refernce` (
-  `id` int(10) NOT NULL auto_increment,
+  `id` int(10) NOT NULL AUTO_INCREMENT,
   `js_id` int(10) NOT NULL,
   `name` varchar(30) NOT NULL,
-  `designation` varchar(30) default NULL,
-  `dept` varchar(30) default NULL,
-  `company_name` varchar(30) default NULL,
-  `contact_no` varchar(30) default NULL,
-  `email` varchar(30) default NULL,
-  `relation` varchar(30) default NULL,
-  PRIMARY KEY  (`id`)
+  `designation` varchar(30) DEFAULT NULL,
+  `dept` varchar(30) DEFAULT NULL,
+  `company_name` varchar(30) DEFAULT NULL,
+  `contact_no` varchar(30) DEFAULT NULL,
+  `email` varchar(30) DEFAULT NULL,
+  `relation` varchar(30) DEFAULT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=5 ;
 
 --
@@ -399,11 +467,11 @@ INSERT INTO `hr_js_refernce` (`id`, `js_id`, `name`, `designation`, `dept`, `com
 --
 
 CREATE TABLE IF NOT EXISTS `hr_js_skills` (
-  `id` int(11) NOT NULL auto_increment,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `js_id` int(11) NOT NULL,
   `name` varchar(100) NOT NULL,
   `description` text,
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=9 ;
 
 --
@@ -426,12 +494,12 @@ INSERT INTO `hr_js_skills` (`id`, `js_id`, `name`, `description`) VALUES
 --
 
 CREATE TABLE IF NOT EXISTS `hr_lookup` (
-  `id` int(11) NOT NULL auto_increment,
-  `name` varchar(50) default NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) DEFAULT NULL,
   `code` int(11) NOT NULL,
-  `type` varchar(50) default NULL,
+  `type` varchar(50) DEFAULT NULL,
   `position` int(11) NOT NULL,
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=25 ;
 
 --
@@ -466,27 +534,143 @@ INSERT INTO `hr_lookup` (`id`, `name`, `code`, `type`, `position`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `hr_user`
+-- Table structure for table `hr_profiles`
 --
 
-CREATE TABLE IF NOT EXISTS `hr_user` (
-  `id` int(11) NOT NULL auto_increment,
-  `username` varchar(128) NOT NULL default '',
-  `password` varchar(128) default '',
-  `salt` varchar(128) default NULL,
-  `full_name` varchar(128) default NULL,
-  `email` varchar(128) default NULL,
-  `role` int(11) default '0',
-  `create_time` int(11) default '0',
-  PRIMARY KEY  (`id`),
+CREATE TABLE IF NOT EXISTS `hr_profiles` (
+  `user_id` int(11) NOT NULL,
+  `lastname` varchar(50) NOT NULL DEFAULT '',
+  `firstname` varchar(50) NOT NULL DEFAULT '',
+  `birthday` date NOT NULL DEFAULT '0000-00-00',
+  PRIMARY KEY (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `hr_profiles`
+--
+
+INSERT INTO `hr_profiles` (`user_id`, `lastname`, `firstname`, `birthday`) VALUES
+(1, 'Admin', 'Administrator', '0000-00-00'),
+(2, 'Demo', 'Demo', '0000-00-00');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `hr_profiles_fields`
+--
+
+CREATE TABLE IF NOT EXISTS `hr_profiles_fields` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `varname` varchar(50) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `field_type` varchar(50) NOT NULL,
+  `field_size` int(3) NOT NULL DEFAULT '0',
+  `field_size_min` int(3) NOT NULL DEFAULT '0',
+  `required` int(1) NOT NULL DEFAULT '0',
+  `match` varchar(255) NOT NULL DEFAULT '',
+  `range` varchar(255) NOT NULL DEFAULT '',
+  `error_message` varchar(255) NOT NULL DEFAULT '',
+  `other_validator` varchar(5000) NOT NULL DEFAULT '',
+  `default` varchar(255) NOT NULL DEFAULT '',
+  `widget` varchar(255) NOT NULL DEFAULT '',
+  `widgetparams` varchar(5000) NOT NULL DEFAULT '',
+  `position` int(3) NOT NULL DEFAULT '0',
+  `visible` int(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `varname` (`varname`,`widget`,`visible`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=4 ;
+
+--
+-- Dumping data for table `hr_profiles_fields`
+--
+
+INSERT INTO `hr_profiles_fields` (`id`, `varname`, `title`, `field_type`, `field_size`, `field_size_min`, `required`, `match`, `range`, `error_message`, `other_validator`, `default`, `widget`, `widgetparams`, `position`, `visible`) VALUES
+(1, 'lastname', 'Last Name', 'VARCHAR', 50, 3, 1, '', '', 'Incorrect Last Name (length between 3 and 50 characters).', '', '', '', '', 1, 3),
+(2, 'firstname', 'First Name', 'VARCHAR', 50, 3, 1, '', '', 'Incorrect First Name (length between 3 and 50 characters).', '', '', '', '', 0, 3),
+(3, 'birthday', 'Birthday', 'DATE', 0, 0, 2, '', '', '', '', '0000-00-00', 'UWjuidate', '{"ui-theme":"redmond"}', 3, 2);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `hr_users`
+--
+
+CREATE TABLE IF NOT EXISTS `hr_users` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `username` varchar(20) NOT NULL,
+  `password` varchar(128) NOT NULL,
+  `email` varchar(128) NOT NULL,
+  `activkey` varchar(128) NOT NULL DEFAULT '',
+  `createtime` int(10) NOT NULL DEFAULT '0',
+  `lastvisit` int(10) NOT NULL DEFAULT '0',
+  `superuser` int(1) NOT NULL DEFAULT '0',
+  `status` int(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `username` (`username`),
+  UNIQUE KEY `email` (`email`),
+  KEY `status` (`status`),
+  KEY `superuser` (`superuser`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
+
+--
+-- Dumping data for table `hr_users`
+--
+
+INSERT INTO `hr_users` (`id`, `username`, `password`, `email`, `activkey`, `createtime`, `lastvisit`, `superuser`, `status`) VALUES
+(1, 'admin', '21232f297a57a5a743894a0e4a801fc3', 'webmaster@example.com', '9a24eff8c15a6a141ece27eb6947da0f', 1261146094, 1304980284, 1, 1),
+(2, 'demo', 'fe01ce2a7fbac8fafaed7c982a04e229', 'demo@example.com', '099f825543f7850cc038b90aaff39fac', 1261146096, 0, 0, 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `hr_user_access`
+--
+
+CREATE TABLE IF NOT EXISTS `hr_user_access` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `role` int(11) NOT NULL DEFAULT '0',
+  `operation` int(11) NOT NULL DEFAULT '0',
+  `value` tinyint(3) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `role` (`role`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=7 ;
+
+--
+-- Dumping data for table `hr_user_access`
+--
+
+INSERT INTO `hr_user_access` (`id`, `role`, `operation`, `value`) VALUES
+(1, 1, 1, 0),
+(2, 1, 2, 1),
+(3, 1, 3, 1),
+(4, 2, 1, 1),
+(5, 2, 2, 0),
+(6, 2, 3, 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `hr_user_bkp`
+--
+
+CREATE TABLE IF NOT EXISTS `hr_user_bkp` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `username` varchar(128) NOT NULL DEFAULT '',
+  `password` varchar(128) DEFAULT '',
+  `salt` varchar(128) DEFAULT NULL,
+  `full_name` varchar(128) DEFAULT NULL,
+  `email` varchar(128) DEFAULT NULL,
+  `role` int(11) DEFAULT '0',
+  `create_time` int(11) DEFAULT '0',
+  PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=127 ;
 
 --
--- Dumping data for table `hr_user`
+-- Dumping data for table `hr_user_bkp`
 --
 
-INSERT INTO `hr_user` (`id`, `username`, `password`, `salt`, `full_name`, `email`, `role`, `create_time`) VALUES
+INSERT INTO `hr_user_bkp` (`id`, `username`, `password`, `salt`, `full_name`, `email`, `role`, `create_time`) VALUES
 (58, 'vvv', '', '4c904dee223544.27081743', 'vvv', 'dsdsas@sadsd.sdef', 0, 1284525550),
 (59, 'testttt', '7cffd636682d98d33c97f3a759f8ee02', '4c9056eb4e2161.71883864', 'test', '', 0, 1284527851),
 (60, 'HJHJH', '7a521f2dae7f384e47790c15ab8a7526', '4c90578f4abc20.57130504', 'FGF', '', 0, 1284528015),
@@ -531,29 +715,19 @@ INSERT INTO `hr_user` (`id`, `username`, `password`, `salt`, `full_name`, `email
 (125, 'com2', '83e278e42f5c371cb535e65206b151c6', '4c9718cbc5b989.72638254', 'com2', '', 2, 1284970699),
 (126, 'com3', '04b38b2129f8ccee3383fc9e6d7bfcef', '4c97197c388d35.44861832', 'com3', '', 2, 1284970876);
 
--- --------------------------------------------------------
-
 --
--- Table structure for table `hr_user_access`
+-- Constraints for dumped tables
 --
 
-CREATE TABLE IF NOT EXISTS `hr_user_access` (
-  `id` int(11) NOT NULL auto_increment,
-  `role` int(11) NOT NULL default '0',
-  `operation` int(11) NOT NULL default '0',
-  `value` tinyint(3) NOT NULL default '0',
-  PRIMARY KEY  (`id`),
-  KEY `role` (`role`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=7 ;
+--
+-- Constraints for table `authassignment`
+--
+ALTER TABLE `authassignment`
+  ADD CONSTRAINT `authassignment_ibfk_1` FOREIGN KEY (`itemname`) REFERENCES `authitem` (`name`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Dumping data for table `hr_user_access`
+-- Constraints for table `authitemchild`
 --
-
-INSERT INTO `hr_user_access` (`id`, `role`, `operation`, `value`) VALUES
-(1, 1, 1, 0),
-(2, 1, 2, 1),
-(3, 1, 3, 1),
-(4, 2, 1, 1),
-(5, 2, 2, 0),
-(6, 2, 3, 1);
+ALTER TABLE `authitemchild`
+  ADD CONSTRAINT `authitemchild_ibfk_1` FOREIGN KEY (`parent`) REFERENCES `authitem` (`name`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `authitemchild_ibfk_2` FOREIGN KEY (`child`) REFERENCES `authitem` (`name`) ON DELETE CASCADE ON UPDATE CASCADE;

@@ -13,10 +13,13 @@ return array(
 	'preload'=>array('log'),
 
 	// autoloading model and component classes
-	'import'=>array(
-		'application.models.*',
-		'application.components.*',
-	),
+    'import'=>array(
+        'application.models.*',
+        'application.components.*',
+        'application.modules.user.models.*',
+        'application.modules.user.components.*',
+    ),
+
 
 	  //adding new theme
     'theme'=>'new',
@@ -26,6 +29,14 @@ return array(
 			'class'=>'system.gii.GiiModule',
 			'password'=>'123',
 		),
+      'user',
+      'rbam'=>array(
+         'initialise'=>true, 
+         'development'=>true,
+         'userClass'=>'User', 
+         'userIdAttribute'=>'id', 
+         'userNameAttribute'=>'username',          
+      ),
 	),	
 	
 	
@@ -38,6 +49,7 @@ return array(
 
 		'urlManager'=>array(
 			'urlFormat'=>'path',
+         'showScriptName' => false,
 			'rules'=>array(
 				'<controller:\w+>/<id:\d+>'=>'<controller>/view',
 				'<controller:\w+>/<action:\w+>/<id:\d+>'=>'<controller>/<action>',
@@ -49,7 +61,7 @@ return array(
 			'connectionString' => 'mysql:host=localhost;dbname=hrrs',
 			'emulatePrepare' => true,
 			'username' => 'root',
-			'password' => '123580',
+			'password' => '',
 			'charset' => 'utf8',
 			'tablePrefix' => 'hr_',
 		),
@@ -59,6 +71,12 @@ return array(
             'connectionID'=>'db',
         ),		
 		
+       'user'=>array(
+               // enable cookie-based authentication
+               'allowAutoLogin'=>true,
+               'loginUrl' => array('/user/login'),
+       ),
+      
 		'errorHandler'=>array(
 			// use 'site/error' action to display errors
             'errorAction'=>'site/error',
